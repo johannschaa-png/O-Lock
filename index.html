@@ -134,6 +134,26 @@ button,select{min-height:44px;touch-action:manipulation}
 .evalTrack #evalFill{position:absolute;left:0;right:0;bottom:0;width:100%;height:50%;border-radius:99px 99px 0 0;background:var(--red);transition:height .22s ease}
 @media(max-width:700px){.boardStage{gap:7px;width:100%}.boardStage .boardWrap{width:auto;max-width:none}.evalRail{flex-basis:17px}.evalTrack{width:12px}}
 
+
+/* O-LOCK 0.3.4 – Analyse-Navigation auf dem iPhone dauerhaft erreichbar */
+@media(max-width:700px){
+  body:has(#reviewPanel.active){padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  #reviewPanel.active .reviewcontrols{
+    position:fixed;
+    left:9px;
+    right:9px;
+    bottom:calc(9px + env(safe-area-inset-bottom));
+    z-index:1000;
+    margin-top:0 !important;
+    padding:9px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--panel);
+    box-shadow:0 5px 24px #0008;
+  }
+  #reviewPanel.active .reviewcontrols button{min-height:42px}
+}
+
 </style>
 </head>
 <body>
@@ -175,7 +195,7 @@ button,select{min-height:44px;touch-action:manipulation}
   <div class="boxlabel" style="margin-top:12px">Zugliste – anklicken zum Nachspielen</div><div class="moveList" id="moveList"></div>
   <div class="note" id="analysisNote" style="margin-top:9px">Die Bewertung ist eine heuristische Einschätzung der aktuellen Engine, keine zertifizierte Spielstärke.</div>
  </section>
- <footer>O-LOCK · Version 0.3.2 · Analyse Edition</footer>
+ <footer>O-LOCK · Version 0.3.4 · Analyse Edition</footer>
 </main>
 <dialog id="promote"><b>Schild-Umwandlung</b><p class="note">Wähle die neue Figur. Der Zug endet danach.</p><div class="promos"><button data-kind="R">□ Viereck</button><button data-kind="T">△ Dreieck</button></div><div style="margin-top:10px"><button id="cancelPromotion">Abbrechen</button></div></dialog>
 <script>
