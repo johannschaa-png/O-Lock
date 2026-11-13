@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="O-LOCK">
 <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-<title>O-LOCK · Version 0.2.4</title>
+<title>O-LOCK · Version 0.3.2 Analyse</title>
 <style>
 :root{color-scheme:dark;--bg:#0d1421;--panel:#182437;--panel2:#22334c;--line:#354963;--txt:#edf3fb;--muted:#a9b8cc;--red:#e65b62;--blue:#59a7f1;--gold:#f4cb68;--green:#50c18c}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1c2d47,#0d1421 65%);color:var(--txt);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
@@ -28,6 +28,7 @@ select,button{font:inherit;color:var(--txt);background:var(--panel2);border:1px 
 .boxlabel{font-size:12px;color:var(--muted);margin-bottom:5px}.log{white-space:pre-wrap;max-height:200px;overflow:auto;background:#101a29;border-radius:10px;padding:10px;font:12px/1.55 ui-monospace,monospace;color:#d8e4f2}
 .note{font-size:12px;color:var(--muted);line-height:1.5}.pill{border:1px solid var(--line);border-radius:99px;padding:4px 8px;color:var(--muted);font-size:11px}
 .progress{height:8px;border-radius:9px;background:#101a29;overflow:hidden}.progress>div{height:100%;width:0;background:var(--green);transition:width .1s}
+.review{display:none;margin-top:12px}.review.active{display:block}.reviewbar{height:15px;border-radius:99px;background:var(--blue);overflow:hidden;border:1px solid #ffffff33;margin:8px 0}.reviewbar>div{height:100%;width:50%;background:var(--red);transition:width .15s}.reviewcontrols{display:flex;gap:8px;align-items:center}.reviewcontrols button{flex:1}.moveList{display:flex;flex-wrap:wrap;gap:5px;max-height:150px;overflow:auto}.moveItem{padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#101a29;font:12px ui-monospace,monospace;cursor:pointer}.moveItem.active{outline:2px solid var(--gold)}.evalText{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
 dialog{border:1px solid var(--line);border-radius:15px;background:var(--panel);color:var(--txt);max-width:340px;width:calc(100% - 30px);padding:18px}dialog::backdrop{background:#0009}.promos{display:flex;gap:10px;margin-top:13px}.promos button{flex:1;font-size:26px}
 footer{margin-top:15px;text-align:center;color:var(--muted);font-size:11px}
 @media(max-width:700px){main{padding:11px 9px 25px}.layout{grid-template-columns:1fr}.panel{padding:12px}.boardWrap{width:min(100%,480px)}.sq{border-radius:6px}.top{margin-bottom:10px}}
@@ -68,7 +69,72 @@ button,select{min-height:44px;touch-action:manipulation}
  .sq{font-size:29px}
  .pill{font-size:10px;padding:4px 6px}
 }
-\n</style>
+\n
+/* O-LOCK 0.3.1 – übersichtliche, überlappungsfreie Zugliste */
+.moveList{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:stretch;
+  gap:6px;
+  max-height:220px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:3px 2px 5px;
+  scrollbar-gutter:stable;
+}
+.moveItem{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#101a29;
+  color:var(--txt);
+  font:600 12px/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;
+  text-align:left;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+}
+.moveItem:nth-child(odd){
+  border-left:3px solid var(--red);
+}
+.moveItem:nth-child(even){
+  border-left:3px solid var(--blue);
+}
+.moveItem.active{
+  outline:2px solid var(--gold);
+  outline-offset:1px;
+  background:var(--panel2);
+}
+.moveItem:focus-visible{
+  outline:2px solid var(--gold);
+  outline-offset:2px;
+}
+@media(max-width:390px){
+  .moveList{gap:4px;max-height:190px}
+  .moveItem{font-size:11px;padding:7px 6px}
+}
+
+
+/* O-LOCK 0.3.2 – vertikale Bewertungsleiste neben dem Brett */
+.boardStage{display:flex;align-items:stretch;gap:9px;width:min(100%,560px);margin:0 auto}
+.boardStage .boardWrap{flex:1 1 auto;width:auto;min-width:0;margin:0}
+.evalRail{display:none;flex:0 0 19px;flex-direction:column;align-items:center;gap:5px;align-self:stretch;min-height:100%;padding:2px 0}
+.evalRail.active{display:flex}
+.railSide{font:800 10px/1 system-ui,sans-serif;text-align:center}
+.railSide.blue{color:var(--blue)}
+.railSide.red{color:var(--red)}
+.evalTrack{position:relative;flex:1 1 auto;width:13px;min-height:120px;border:1px solid #ffffff55;border-radius:99px;background:var(--blue);overflow:hidden;box-shadow:inset 0 1px 4px #0005}
+.evalTrack #evalFill{position:absolute;left:0;right:0;bottom:0;width:100%;height:50%;border-radius:99px 99px 0 0;background:var(--red);transition:height .22s ease}
+@media(max-width:700px){.boardStage{gap:7px;width:100%}.boardStage .boardWrap{width:auto;max-width:none}.evalRail{flex-basis:17px}.evalTrack{width:12px}}
+
+</style>
 </head>
 <body>
 <main>
@@ -76,7 +142,14 @@ button,select{min-height:44px;touch-action:manipulation}
  <div class="layout">
   <section class="panel">
    <div class="status" id="status">Rot am Zug</div>
-   <div class="boardWrap"><div class="board" id="board" aria-label="O-LOCK Spielbrett"></div></div>
+   <div class="boardStage">
+     <div class="evalRail" id="evalRail" aria-label="Stellungsbewertung" title="Stellungsbewertung aus Sicht von Rot; jede Stellung wird unabhängig mit 3 Halbzügen Vorschau bewertet.">
+      <span class="railSide blue">B</span>
+      <div class="evalTrack"><div id="evalFill"></div></div>
+      <span class="railSide red">R</span>
+     </div>
+     <div class="boardWrap"><div class="board" id="board" aria-label="O-LOCK Spielbrett"></div></div>
+    </div>
    <div class="legend"><span>🔴 Rot · Grundreihe 1</span><span>🔵 Blau · Grundreihe 8</span></div>
   </section>
   <aside class="panel controls">
@@ -90,11 +163,19 @@ button,select{min-height:44px;touch-action:manipulation}
    <div class="row"><button class="primary" id="batch">100 Partien simulieren</button><button id="stop" disabled>Stoppen</button></div>
    <div class="progress"><div id="bar"></div></div><div class="note" id="batchText">Noch kein Testlauf.</div>
    <div class="stats"><div class="stat"><b id="rw">0</b><span>Rot-Siege</span></div><div class="stat"><b id="bw">0</b><span>Blau-Siege</span></div><div class="stat"><b id="dr">0</b><span>Remis</span></div></div>
-   <div class="note">Zug: Figur antippen, dann markiertes Zielfeld. Bei einem Schild auf der gegnerischen Grundreihe wählst du Viereck oder Dreieck. Die KI verwendet dieselbe Legalitätsprüfung wie das Brett.</div>
+   <div class="note">Zug: Figur antippen, dann markiertes Zielfeld. Bei einem Schild auf der gegnerischen Grundreihe wählst du Viereck oder Dreieck. Die KI verwendet dieselbe Legalitätsprüfung wie das Brett. Remis: dreifache Stellungswiederholung oder 60 Halbzüge ohne Schildzug/Schlagzug.</div>
    <div class="note"><b>Hinweis:</b> Dies ist ein Entwicklungsstand, noch keine abschließend validierte Regelengine. Der KI-Testlauf zählt echte intern ausgespielte Partien; ein technisches Zuglimit wird separat ausgewiesen und nicht als Remis gewertet.</div>
   </aside>
  </div>
- <footer>O-LOCK · Mobile Edition · Spielregeln und KI unverändert</footer>
+ <section class="panel review" id="reviewPanel">
+  <div class="boxlabel"><b>Partieanalyse · experimentelle Engine-Bewertung</b></div>
+  <div class="evalText"><span id="evalRed">Rot 0.0</span><span id="evalBlue">Blau 0.0</span></div>
+  <div class="evalText"><span id="evalLabel">Stellung ausgeglichen</span><span id="moveQuality">—</span></div>
+  <div class="reviewcontrols" style="margin-top:9px"><button id="firstMove">|◀</button><button id="prevMove">◀</button><span id="reviewIndex" class="pill">0 / 0</span><button id="nextMove">▶</button><button id="lastMove">▶|</button></div>
+  <div class="boxlabel" style="margin-top:12px">Zugliste – anklicken zum Nachspielen</div><div class="moveList" id="moveList"></div>
+  <div class="note" id="analysisNote" style="margin-top:9px">Die Bewertung ist eine heuristische Einschätzung der aktuellen Engine, keine zertifizierte Spielstärke.</div>
+ </section>
+ <footer>O-LOCK · Version 0.3.2 · Analyse Edition</footer>
 </main>
 <dialog id="promote"><b>Schild-Umwandlung</b><p class="note">Wähle die neue Figur. Der Zug endet danach.</p><div class="promos"><button data-kind="R">□ Viereck</button><button data-kind="T">△ Dreieck</button></div><div style="margin-top:10px"><button id="cancelPromotion">Abbrechen</button></div></dialog>
 <script>
@@ -109,14 +190,15 @@ button,select{min-height:44px;touch-action:manipulation}
 const RED=1,BLUE=-1,GLYPH={O:"O",T:"△",R:"□",P:"━"};
 const pos=i=>[Math.floor(i/5),i%5],at=(r,c)=>r*5+c,inside=(r,c)=>r>=0&&r<8&&c>=0&&c<5;
 const name=c=>c===RED?"Rot":"Blau",coord=i=>String.fromCharCode(97+pos(i)[1])+(8-pos(i)[0]);
-const copy=s=>({b:s.b.map(x=>x?{p:x.p,c:x.c}:null),turn:s.turn,ply:s.ply});
+const positionKey=s=>s.b.map(x=>x?(x.c===RED?"r":"b")+x.p:"..").join("")+"|"+s.turn;
+const copy=s=>({b:s.b.map(x=>x?{p:x.p,c:x.c}:null),turn:s.turn,ply:s.ply,quiet:s.quiet||0,repHistory:(s.repHistory||[]).slice()});
 function initial(){
  const b=Array(40).fill(null);
  ["R","T","O","T","R"].forEach((p,c)=>b[35+c]={p,c:RED});
  for(let c=0;c<5;c++)b[30+c]={p:"P",c:RED};
  ["R","T","O","T","R"].forEach((p,c)=>b[c]={p,c:BLUE});
  for(let c=0;c<5;c++)b[5+c]={p:"P",c:BLUE};
- return {b,turn:RED,ply:0};
+ const s={b,turn:RED,ply:0,quiet:0,repHistory:[]};s.repHistory=[positionKey(s)];return s;
 }
 function king(s,color){return s.b.findIndex(x=>x&&x.c===color&&x.p==="O")}
 function addMove(s,out,from,to,extra={}){
@@ -199,6 +281,9 @@ function apply(s,m){
  if(x.p==="P"&&m.selfDestruct)n.b[m.to]=null;
  else n.b[m.to]={p:m.promotion||x.p,c:x.c};
  n.turn=-s.turn;n.ply++;
+ const captured=!!s.b[m.to];
+ n.quiet=(x.p==="P"||captured)?0:(s.quiet||0)+1;
+ n.repHistory=(s.repHistory||[]).concat(positionKey(n));
  return n;
 }
 function legal(s,color=s.turn){
@@ -218,13 +303,27 @@ function cornerWinner(s){
 }
 function result(s){
  const cw=cornerWinner(s);if(cw)return {over:true,winner:cw,reason:"O-Figur erreicht ein Eckfeld"};
+ const key=positionKey(s),reps=(s.repHistory||[]).filter(k=>k===key).length;
+ if(reps>=3)return {over:true,winner:0,reason:"Dreifache Stellungswiederholung"};
+ if((s.quiet||0)>=60)return {over:true,winner:0,reason:"60 Halbzüge ohne Schildzug oder Schlagzug"};
  const ms=legal(s);
  if(!ms.length)return check(s,s.turn)?{over:true,winner:-s.turn,reason:"Schachmatt"}:{over:true,winner:0,reason:"Patt"};
  return {over:false};
 }
 function moveDesc(s,m){
- const x=s.b[m.from],cap=s.b[m.to];
- return `${name(s.turn)}: ${GLYPH[x.p]} ${coord(m.from)}–${coord(m.to)}${cap?" × "+GLYPH[cap.p]:""}${m.selfDestruct?" · Schild löst sich auf":""}${m.promotion?" · Umwandlung zu "+GLYPH[m.promotion]:""}`;
+ const x=s.b[m.from],victim=s.b[m.to],piece=x.p==="P"?"":GLYPH[x.p];
+ let dis="";
+ if(x.p!=="P"){
+  const alternatives=legal(s).filter(q=>q.from!==m.from&&q.to===m.to&&s.b[q.from]?.p===x.p);
+  if(alternatives.length){const sameFile=alternatives.some(q=>pos(q.from)[1]===pos(m.from)[1]);dis=sameFile?String(8-pos(m.from)[0]):String.fromCharCode(97+pos(m.from)[1]);}
+ }
+ let out=(x.p==="P"&&victim?String.fromCharCode(97+pos(m.from)[1]):piece+dis)+(victim?"x":"")+coord(m.to);
+ if(m.promotion)out+="="+GLYPH[m.promotion];
+ const n=apply(s,m),t=result(n);
+ if(t.over&&t.reason==="Schachmatt")out+="#";
+ else if(t.over&&t.reason==="O-Figur erreicht ein Eckfeld")out+="# (Eckverlust)";
+ else if(check(n,n.turn))out+="+";
+ return out;
 }
 function evaluate(s,side){
  const val={P:1,T:3.1,R:3.2,O:0};let score=0;
@@ -238,9 +337,16 @@ function evaluate(s,side){
   const k=king(s,color);
   if(k>=0){const [r,c]=pos(k);const edge=Math.min(r,c,7-r,4-c);score+=(color===side?1:-1)*(-edge*.08);
    const safe=legal({...s,turn:color},color).filter(m=>s.b[m.from]?.p==="O").length;
-   score+=(color===side?1:-1)*safe*.035;
+   score+=(color===side?1:-1)*safe*.075;
+   // A Square is not automatically valuable: assess whether it actually restricts
+   // the O's legal destinations. The no-Square state removes that restriction.
+   if(n>0){
+    const [kr,kc]=pos(k);let geometric=0;
+    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if((dr||dc)&&inside(kr+dr,kc+dc))geometric++;
+    score+=(color===side?1:-1)*((geometric-safe)*-.025);
+   }
   }
-  if(n===0)score+=(color===side?1:-1)*.45;
+  if(n===0)score+=(color===side?1:-1)*.15;
  }
  return score;
 }
@@ -278,26 +384,31 @@ function chooseAI(s,level){
  }
  return {...choices[Math.floor(Math.random()*choices.length)],score:best};
 }
-let game=initial(),history=[],notation=[],selected=-1,targets=[],promotionMove=null,aiTimer=null,batchCancel=false;
+let game=initial(),history=[],notation=[],snapshots=[initial()],selected=-1,targets=[],promotionMove=null,aiTimer=null,batchCancel=false,reviewing=false,viewIndex=0,evals=[];
 const el=id=>document.getElementById(id);
 function isHumanTurn(){const mode=el("mode").value;return mode==="hh"||(mode==="ai"&&game.turn===Number(el("human").value));}
 function draw(){
+ const shown=reviewing?snapshots[viewIndex]:game;
  const board=el("board");board.innerHTML="";
  for(let i=0;i<40;i++){
-  const x=game.b[i],btn=document.createElement("button");btn.className="sq"+(((Math.floor(i/5)+i%5)%2)?" dark":"");
+  const x=shown.b[i],btn=document.createElement("button");btn.className="sq"+(((Math.floor(i/5)+i%5)%2)?" dark":"");
   if(x)btn.classList.add(x.c===RED?"red":"blue");
-  if(i===selected)btn.classList.add("selected");
-  if(targets.some(m=>m.to===i))btn.classList.add(x?"capture":"target");
+  if(!reviewing&&i===selected)btn.classList.add("selected");
+  if(!reviewing&&targets.some(m=>m.to===i))btn.classList.add(x?"capture":"target");
   btn.innerHTML=`<span class="coord">${coord(i)}</span>${x?GLYPH[x.p]:""}`;
   btn.setAttribute("aria-label",`${coord(i)} ${x?name(x.c)+" "+x.p:"leer"}`);
-  btn.onclick=()=>tap(i);board.appendChild(btn);
+  btn.onclick=()=>{if(!reviewing)tap(i);};board.appendChild(btn);
  }
- const t=result(game);
- el("status").innerHTML=t.over?`${t.winner?name(t.winner)+" gewinnt":"Unentschieden"} · ${t.reason}`:`${name(game.turn)} am Zug${check(game,game.turn)?" · SCHACH":""}<small>${el("mode").value==="ai"?(isHumanTurn()?"Du bist am Zug":"KI denkt …"):el("mode").value==="aivai"?"KI gegen KI":"Mensch gegen Mensch"}</small>`;
- el("log").textContent=notation.length?notation.map((v,i)=>`${i+1}. ${v}`).join("\n"):"Noch keine Züge.";
- el("undo").disabled=!history.length;
+ const t=result(shown);
+ el("status").innerHTML=reviewing?`Analyse · Stellung nach ${viewIndex} Halbzügen${t.over?" · "+(t.winner?name(t.winner)+" gewinnt":"Remis") : ""}`:t.over?`${t.winner?name(t.winner)+" gewinnt":"Unentschieden"} · ${t.reason}`:`${name(game.turn)} am Zug${check(game,game.turn)?" · SCHACH":""}<small>${el("mode").value==="ai"?(isHumanTurn()?"Du bist am Zug":"KI denkt …"):el("mode").value==="aivai"?"KI gegen KI":"Mensch gegen Mensch"}</small>`;
+ el("log").innerHTML=notation.length?notation.map((v,i)=>`<span class="moveItem ${reviewing&&viewIndex===i+1?"active":""}" data-ply="${i+1}">${Math.floor(i/2)+1}${i%2?"…":"."} ${v}</span>`).join(" "):"Noch keine Züge.";
+ el("log").querySelectorAll("[data-ply]").forEach(n=>n.onclick=()=>showPly(Number(n.dataset.ply)));
+ el("undo").disabled=!history.length||reviewing;
  el("levelField").style.display=el("mode").value==="hh"?"none":"block";
  el("sideField").style.display=el("mode").value==="ai"?"block":"none";
+ el("reviewPanel").classList.toggle("active",result(game).over||reviewing);
+ el("evalRail").classList.toggle("active",el("reviewPanel").classList.contains("active"));
+ if(el("reviewPanel").classList.contains("active"))updateReview();
 }
 function tap(i){
  if(!isHumanTurn()||result(game).over||promotionMove)return;
@@ -310,10 +421,11 @@ function tap(i){
  else{selected=-1;targets=[];draw();}
 }
 function commit(m){
- const desc=moveDesc(game,m);history.push(copy(game));game=apply(game,m);notation.push(desc);
+ const desc=moveDesc(game,m);history.push(copy(game));game=apply(game,m);notation.push(desc);snapshots.push(copy(game));reviewing=false;viewIndex=snapshots.length-1;
  selected=-1;targets=[];promotionMove=null;draw();
  if(!result(game).over&&el("mode").value==="ai"&&!isHumanTurn())scheduleAI();
  if(!result(game).over&&el("mode").value==="aivai")scheduleAI();
+ if(result(game).over){reviewing=true;viewIndex=snapshots.length-1;buildAnalysis();draw();}
 }
 function scheduleAI(){clearTimeout(aiTimer);aiTimer=setTimeout(()=>{
  if(result(game).over)return;
@@ -325,8 +437,38 @@ el("promote").querySelectorAll("[data-kind]").forEach(b=>b.onclick=()=>{
  if(!promotionMove)return;const m={...promotionMove,promotion:b.dataset.kind};el("promote").close();commit(m);
 });
 el("cancelPromotion").onclick=()=>{promotionMove=null;el("promote").close();};
+function buildAnalysis(){
+ evals=snapshots.map(s=>negamax(s,3,-Infinity,Infinity,RED));
+ const list=el("moveList");list.innerHTML="";
+ notation.forEach((m,i)=>{const b=document.createElement("button");b.className="moveItem";b.textContent=`${Math.floor(i/2)+1}${i%2?"…":"."} ${m}`;b.onclick=()=>showPly(i+1);list.appendChild(b);});
+ updateReview();
+}
+function updateReview(){
+ if(!evals.length)evals=snapshots.map(s=>negamax(s,3,-Infinity,Infinity,RED));
+ const v=evals[Math.min(viewIndex,evals.length-1)]||0;
+ const clamped=Math.max(-6,Math.min(6,v)),redPct=50+clamped/12*100;
+ el("evalFill").style.height=redPct+"%";
+ el("evalRed").textContent="Rot "+Math.max(0,v).toFixed(1);
+ el("evalBlue").textContent="Blau "+Math.max(0,-v).toFixed(1);
+ el("evalLabel").textContent=Math.abs(v)<.25?"Stellung ausgeglichen":v>0?"Vorteil Rot":"Vorteil Blau";
+ el("reviewIndex").textContent=`${viewIndex} / ${snapshots.length-1}`;
+ let q="—";
+ if(viewIndex>0&&evals.length>viewIndex){const delta=evals[viewIndex]-evals[viewIndex-1],mover=viewIndex%2===1?RED:BLUE,loss=mover===RED?-delta:delta;
+  q=loss>2.2?"?? Patzer":loss>1.2?"? Fehler":loss>.55?"?! Ungenauigkeit":loss<-.45?"! Starker Zug":"Solider Zug";
+ }
+ el("moveQuality").textContent=q;
+ el("firstMove").disabled=viewIndex===0;el("prevMove").disabled=viewIndex===0;
+ el("nextMove").disabled=viewIndex>=snapshots.length-1;el("lastMove").disabled=viewIndex>=snapshots.length-1;
+ el("analysisNote").textContent="Bewertung jeder Stellung unabhängig vom letzten Zug: 3 Halbzüge Vorausberechnung (Zug, Antwort, Folgezug) mit Material-, Figuren- und O-Beweglichkeitsbewertung. Dadurch sollen bereits vorhandene Drohungen vor dem gegnerischen Ausführungszug sichtbarer werden. Qualitätslabels bleiben vorläufig; dies ist noch keine tief validierte Engine.";
+}
+function showPly(n){reviewing=true;viewIndex=Math.max(0,Math.min(n,snapshots.length-1));selected=-1;targets=[];draw();}
+el("firstMove").onclick=()=>showPly(0);el("prevMove").onclick=()=>showPly(viewIndex-1);el("nextMove").onclick=()=>showPly(viewIndex+1);el("lastMove").onclick=()=>showPly(snapshots.length-1);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft"||e.key==="ArrowRight"){
+ if(!result(game).over&&!reviewing)return;
+ e.preventDefault();showPly(viewIndex+(e.key==="ArrowLeft"?-1:1));
+}});
 function fresh(){
- clearTimeout(aiTimer);game=initial();history=[];notation=[];selected=-1;targets=[];promotionMove=null;el("evaluation").textContent="Noch keine Bewertung.";draw();
+ clearTimeout(aiTimer);game=initial();history=[];notation=[];snapshots=[copy(game)];selected=-1;targets=[];promotionMove=null;reviewing=false;viewIndex=0;evals=[];el("evaluation").textContent="Noch keine Bewertung.";draw();
  if(el("mode").value==="aivai")scheduleAI();
  if(el("mode").value==="ai"&&Number(el("human").value)===BLUE)scheduleAI();
 }
@@ -335,7 +477,7 @@ el("undo").onclick=()=>{
  clearTimeout(aiTimer);if(!history.length)return;
  // In human-vs-AI mode undo both the AI reply and the preceding human move where possible.
  const count=el("mode").value==="ai"&&history.length>=2?2:1;
- for(let j=0;j<count&&history.length;j++){game=history.pop();notation.pop();}
+ for(let j=0;j<count&&history.length;j++){game=history.pop();notation.pop();snapshots.pop();}reviewing=false;viewIndex=snapshots.length-1;
  selected=-1;targets=[];promotionMove=null;draw();
 };
 el("mode").onchange=fresh;el("human").onchange=fresh;
